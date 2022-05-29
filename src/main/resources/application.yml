@@ -1,0 +1,38 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: api-gateway
+  cloud:
+    gateway:
+      default-filters:
+        - name: LogFilter
+      routes:
+        - id: product-route
+          uri: http://localhost:8081
+          predicates:
+            - Path=/product/**
+
+        - id: user-route
+          uri: http://localhost:8082
+          predicates:
+            - Path=/user/**
+          filters:
+            - AddRequestHeader=user-request-header, custom-user-request-header
+            - AddResponseHeader=user-response-header, custom-user-response-header
+
+management:
+  info:
+    env:
+      enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: info, health
+
+info:
+  app:
+    name: api-gateway
+    description: Spring Cloud Gateway Application
+    version: 1.0.0
